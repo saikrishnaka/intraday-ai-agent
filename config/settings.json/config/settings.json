@@ -1,0 +1,6 @@
+{
+  "project_name": "Intraday AI Agent",
+  "mode": "paper_trading",
+  "market": "NSE",
+  "risk_mode": "conservative"
+}
