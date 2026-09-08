@@ -2,6 +2,7 @@ from data.market_data import MarketData
 from agents.market_analyzer import MarketAnalyzer
 from agents.news_analyzer import NewsAnalyzer
 from agents.strategy_selector import StrategySelector
+from agents.decision_engine import DecisionEngine
 from paper_trading.trade_planner import TradePlanner
 from paper_trading.paper_engine import PaperTradingEngine
 
@@ -13,6 +14,7 @@ class IntradayAgent:
         self.market_analyzer = MarketAnalyzer()
         self.news_analyzer = NewsAnalyzer()
         self.strategy_selector = StrategySelector()
+        self.decision_engine = DecisionEngine()
         self.trade_planner = TradePlanner()
         self.paper_engine = PaperTradingEngine()
 
@@ -27,12 +29,18 @@ class IntradayAgent:
             market_analysis
         )
 
+        decisions = []
+
+        for stock in market_data.get("stocks", []):
+            decision = self.decision_engine.decide(stock)
+            decisions.append(decision)
+
         trade_plans = []
         paper_trades = []
 
-        for selected in selected_strategies:
-            symbol = selected.get("symbol")
-            strategy = selected.get("selected_strategy")
+        for decision in decisions:
+            symbol = decision.get("symbol")
+            strategy = decision.get("best_strategy")
 
             stock = next(
                 (
@@ -73,6 +81,7 @@ class IntradayAgent:
             "market": market_data,
             "analysis": market_analysis,
             "strategies": selected_strategies,
+            "decisions": decisions,
             "trade_plans": trade_plans,
             "paper_trades": paper_trades
         }
